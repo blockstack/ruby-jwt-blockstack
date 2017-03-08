@@ -13,12 +13,13 @@ module JWT
 
     HMAC_ALGORITHMS = %w(HS256 HS512256 HS384 HS512).freeze
     RSA_ALGORITHMS = %w(RS256 RS384 RS512).freeze
-    ECDSA_ALGORITHMS = %w(ES256 ES384 ES512).freeze
+    ECDSA_ALGORITHMS = %w(ES256 ES384 ES512 ES256K).freeze
 
     NAMED_CURVES = {
       'prime256v1' => 'ES256',
       'secp384r1' => 'ES384',
-      'secp521r1' => 'ES512'
+      'secp521r1' => 'ES512',
+      'secp256k1' => 'ES256K'
     }.freeze
 
     def sign(algorithm, msg, key)
@@ -64,7 +65,7 @@ module JWT
         raise IncorrectAlgorithm, "payload algorithm is #{algorithm} but #{key_algorithm} signing key was provided"
       end
 
-      digest = OpenSSL::Digest.new(algorithm.sub('ES', 'sha'))
+      digest = OpenSSL::Digest.new(algorithm.sub('ES', 'sha').sub('K', ''))
       asn1_to_raw(private_key.dsa_sign_asn1(digest.digest(msg)), private_key)
     end
 
@@ -87,7 +88,7 @@ module JWT
         raise IncorrectAlgorithm, "payload algorithm is #{algorithm} but #{key_algorithm} verification key was provided"
       end
 
-      digest = OpenSSL::Digest.new(algorithm.sub('ES', 'sha'))
+      digest = OpenSSL::Digest.new(algorithm.sub('ES', 'sha').sub('K', ''))
       public_key.dsa_verify_asn1(digest.digest(signing_input), raw_to_asn1(signature, public_key))
     end
 
