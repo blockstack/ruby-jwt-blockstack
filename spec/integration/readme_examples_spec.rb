@@ -55,6 +55,21 @@ describe 'README.md code test' do
         { 'alg' => 'ES256' }
       ]
     end
+
+    it 'ES256K' do
+      ecdsa_key = OpenSSL::PKey::EC.new 'secp256k1'
+      ecdsa_key.generate_key
+      ecdsa_public = OpenSSL::PKey::EC.new ecdsa_key
+      ecdsa_public.private_key = nil
+
+      token = JWT.encode payload, ecdsa_key, 'ES256K'
+      decoded_token = JWT.decode token, ecdsa_public, true, algorithm: 'ES256K'
+
+      expect(decoded_token).to eq [
+        { 'data' => 'test' },
+        { 'alg' => 'ES256K' }
+      ]
+    end
   end
 
   context 'claims' do
