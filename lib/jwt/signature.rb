@@ -13,13 +13,13 @@ module JWT
 
     HMAC_ALGORITHMS = %w(HS256 HS512256 HS384 HS512).freeze
     RSA_ALGORITHMS = %w(RS256 RS384 RS512).freeze
-    ECDSA_ALGORITHMS = %w(ES256 ES384 ES512 ES256k).freeze
+    ECDSA_ALGORITHMS = %w(ES256 ES384 ES512 ES256K).freeze
 
     NAMED_CURVES = {
       'prime256v1' => 'ES256',
       'secp384r1' => 'ES384',
       'secp521r1' => 'ES512',
-      'secp256k1' => 'ES256k'
+      'secp256k1' => 'ES256K'
     }.freeze
 
     def sign(algorithm, msg, key)
