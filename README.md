@@ -39,7 +39,7 @@ See: [ JSON Web Algorithms (JWA) 3.1. "alg" (Algorithm) Header Parameter Values 
 * none - unsigned token
 
 ```ruby
-require 'jwt'
+require 'jwt-blockstack'
 
 payload = {:data => 'test'}
 
