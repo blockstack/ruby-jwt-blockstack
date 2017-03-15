@@ -5,7 +5,7 @@
 [![Test Coverage](https://codeclimate.com/github/jwt/ruby-jwt/badges/coverage.svg)](https://codeclimate.com/github/jwt/ruby-jwt/coverage)
 [![Issue Count](https://codeclimate.com/github/jwt/ruby-jwt/badges/issue_count.svg)](https://codeclimate.com/github/jwt/ruby-jwt)
 
-A pure ruby implementation of the [RFC 7519 OAuth JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) standard.
+A pure ruby implementation of the [RFC 7519 OAuth JSON Web Token (JWT)](https://tools.ietf.org/html/rfc7519) standard with additional support for the secp256k1 curve used by bitcoin.
 
 If you have further questions related to development or usage, join us: [ruby-jwt google group](https://groups.google.com/forum/#!forum/ruby-jwt).
 
@@ -18,13 +18,13 @@ If you have further questions related to development or usage, join us: [ruby-jw
 
 ### Using Rubygems:
 ```bash
-sudo gem install jwt
+sudo gem install jwt-blockstack
 ```
 
 ### Using Bundler:
 Add the following to your Gemfile
 ```
-gem 'jwt'
+gem 'jwt-blockstack'
 ```
 And run `bundle install`
 
@@ -117,24 +117,25 @@ puts decoded_token
 * ES256 - ECDSA using P-256 and SHA-256
 * ES384 - ECDSA using P-384 and SHA-384
 * ES512 - ECDSA using P-521 and SHA-512
+* ES256K - ECDSA using secp256k1
 
 ```ruby
-ecdsa_key = OpenSSL::PKey::EC.new 'prime256v1'
+ecdsa_key = OpenSSL::PKey::EC.new 'secp256k1'
 ecdsa_key.generate_key
 ecdsa_public = OpenSSL::PKey::EC.new ecdsa_key
 ecdsa_public.private_key = nil
 
-token = JWT.encode payload, ecdsa_key, 'ES256'
+token = JWT.encode payload, ecdsa_key, 'ES256K'
 
-# eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJ0ZXN0IjoiZGF0YSJ9.MEQCIAtShrxRwP1L9SapqaT4f7hajDJH4t_rfm-YlZcNDsBNAiB64M4-JRfyS8nRMlywtQ9lHbvvec9U54KznzOe1YxTyA
+# eyJhbGciOiJFUzI1NksifQ.eyJkYXRhIjoidGVzdCJ9.SlW6tqCxv-R5488_aRpY2hB6yR3thDT_206zNpThS8RZFbrYyLtpD3xg5kHLHh3NRGUGQkzMlndnkzJYohslSA
 puts token
 
-decoded_token = JWT.decode token, ecdsa_public, true, { :algorithm => 'ES256' }
+decoded_token = JWT.decode token, ecdsa_public, true, { :algorithm => 'ES256K' }
 
 # Array
 # [
 #    {"test"=>"data"}, # payload
-#    {"alg"=>"ES256"} # header
+#    {"alg"=>"ES256K"} # header
 # ]
 puts decoded_token
 ```
