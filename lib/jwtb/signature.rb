@@ -5,9 +5,9 @@ begin
 rescue LoadError
 end
 
-# JWT::Signature module
-module JWT
-  # Signature logic for JWT
+# JWTB::Signature module
+module JWTB
+  # Signature logic for JWTB
   module Signature
     extend self
 
@@ -42,12 +42,12 @@ module JWT
                  elsif ECDSA_ALGORITHMS.include?(algo)
                    verify_ecdsa(algo, key, signing_input, signature)
                  else
-                   raise JWT::VerificationError, 'Algorithm not supported'
+                   raise JWTB::VerificationError, 'Algorithm not supported'
                  end
 
-      raise(JWT::VerificationError, 'Signature verification raised') unless verified
+      raise(JWTB::VerificationError, 'Signature verification raised') unless verified
     rescue OpenSSL::PKey::PKeyError
-      raise JWT::VerificationError, 'Signature verification raised'
+      raise JWTB::VerificationError, 'Signature verification raised'
     ensure
       OpenSSL.errors.clear
     end

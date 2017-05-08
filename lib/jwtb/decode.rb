@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 require 'json'
 
-# JWT::Decode module
-module JWT
-  # Decoding logic for JWT
+# JWTB::Decode module
+module JWTB
+  # Decoding logic for JWTB
   class Decode
     attr_reader :header, :payload, :signature
 
@@ -30,7 +30,7 @@ module JWT
     def raw_segments(jwt, verify)
       segments = jwt.split('.')
       required_num_segments = verify ? [3] : [2, 3]
-      raise(JWT::DecodeError, 'Not enough or too many segments') unless required_num_segments.include? segments.length
+      raise(JWTB::DecodeError, 'Not enough or too many segments') unless required_num_segments.include? segments.length
       segments
     end
 
@@ -39,7 +39,7 @@ module JWT
       payload = JSON.parse(Decode.base64url_decode(payload_segment))
       [header, payload]
     rescue JSON::ParserError
-      raise JWT::DecodeError, 'Invalid segment encoding'
+      raise JWTB::DecodeError, 'Invalid segment encoding'
     end
   end
 end

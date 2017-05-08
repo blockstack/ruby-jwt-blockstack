@@ -2,7 +2,7 @@
 # frozen_string_literal: true
 
 # Moments version builder module
-module JWT
+module JWTB
   def self.gem_version
     Gem::Version.new VERSION::STRING
   end
@@ -16,7 +16,7 @@ module JWT
     # tiny version
     TINY  = 0
     # alpha, beta, etc. tag
-    PRE   = 'beta2'.freeze
+    PRE   = 'beta2.bsk1'.freeze
 
     # Build version string
     STRING = [MAJOR, MINOR, TINY, PRE].compact.join('.')

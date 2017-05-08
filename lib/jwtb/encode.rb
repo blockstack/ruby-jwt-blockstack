@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 require 'json'
 
-# JWT::Encode module
-module JWT
-  # Encoding logic for JWT
+# JWTB::Encode module
+module JWTB
+  # Encoding logic for JWTB
   class Encode
     attr_reader :payload, :key, :algorithm, :header_fields, :segments
 
@@ -35,7 +35,7 @@ module JWT
       if algorithm == 'none'
         ''
       else
-        signature = JWT::Signature.sign(algorithm, signing_input, key)
+        signature = JWTB::Signature.sign(algorithm, signing_input, key)
         Encode.base64url_encode(signature)
       end
     end

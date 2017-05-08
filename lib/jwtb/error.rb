@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module JWT
+module JWTB
   class EncodeError < StandardError; end
   class DecodeError < StandardError; end
   class VerificationError < DecodeError; end

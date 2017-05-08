@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 require 'spec_helper'
-require 'jwt/verify'
+require 'jwtb/verify'
 
-module JWT
+module JWTB
   RSpec.describe Verify do
     let(:base_payload) { { 'user_id' => 'some@user.tld' } }
     let(:options) { { leeway: 0 } }
@@ -13,16 +13,16 @@ module JWT
       let(:scalar_payload) { base_payload.merge('aud' => scalar_aud) }
       let(:array_payload) { base_payload.merge('aud' => array_aud) }
 
-      it 'must raise JWT::InvalidAudError when the singular audience does not match' do
+      it 'must raise JWTB::InvalidAudError when the singular audience does not match' do
         expect do
           Verify.verify_aud(scalar_payload, options.merge(aud: 'no-match'))
-        end.to raise_error JWT::InvalidAudError
+        end.to raise_error JWTB::InvalidAudError
       end
 
-      it 'must raise JWT::InvalidAudError when the payload has an array and none match the supplied value' do
+      it 'must raise JWTB::InvalidAudError when the payload has an array and none match the supplied value' do
         expect do
           Verify.verify_aud(array_payload, options.merge(aud: 'no-match'))
-        end.to raise_error JWT::InvalidAudError
+        end.to raise_error JWTB::InvalidAudError
       end
 
       it 'must allow a matching singular audience to pass' do
@@ -46,10 +46,10 @@ module JWT
       let(:leeway) { 10 }
       let(:payload) { base_payload.merge('exp' => (Time.now.to_i - 5)) }
 
-      it 'must raise JWT::ExpiredSignature when the token has expired' do
+      it 'must raise JWTB::ExpiredSignature when the token has expired' do
         expect do
           Verify.verify_expiration(payload, options)
-        end.to raise_error JWT::ExpiredSignature
+        end.to raise_error JWTB::ExpiredSignature
       end
 
       it 'must allow some leeway in the expiration when global leeway is configured' do
@@ -65,7 +65,7 @@ module JWT
 
         expect do
           Verify.verify_expiration(payload, options)
-        end.to raise_error JWT::ExpiredSignature
+        end.to raise_error JWTB::ExpiredSignature
       end
     end
 
@@ -89,16 +89,16 @@ module JWT
         Verify.verify_iat(payload.merge('iat' => Time.now.to_i), options)
       end
 
-      it 'must raise JWT::InvalidIatError when the iat value is not Numeric' do
+      it 'must raise JWTB::InvalidIatError when the iat value is not Numeric' do
         expect do
           Verify.verify_iat(payload.merge('iat' => 'not a number'), options)
-        end.to raise_error JWT::InvalidIatError
+        end.to raise_error JWTB::InvalidIatError
       end
 
-      it 'must raise JWT::InvalidIatError when the iat value is in the future' do
+      it 'must raise JWTB::InvalidIatError when the iat value is in the future' do
         expect do
           Verify.verify_iat(payload.merge('iat' => (iat + 120)), options)
-        end.to raise_error JWT::InvalidIatError
+        end.to raise_error JWTB::InvalidIatError
       end
     end
 
@@ -106,18 +106,18 @@ module JWT
       let(:iss) { 'ruby-jwt-gem' }
       let(:payload) { base_payload.merge('iss' => iss) }
 
-      let(:invalid_token) { JWT.encode base_payload, payload[:secret] }
+      let(:invalid_token) { JWTB.encode base_payload, payload[:secret] }
 
-      it 'must raise JWT::InvalidIssuerError when the configured issuer does not match the payload issuer' do
+      it 'must raise JWTB::InvalidIssuerError when the configured issuer does not match the payload issuer' do
         expect do
           Verify.verify_iss(payload, options.merge(iss: 'mismatched-issuer'))
-        end.to raise_error JWT::InvalidIssuerError
+        end.to raise_error JWTB::InvalidIssuerError
       end
 
-      it 'must raise JWT::InvalidIssuerError when the payload does not include an issuer' do
+      it 'must raise JWTB::InvalidIssuerError when the payload does not include an issuer' do
         expect do
           Verify.verify_iss(base_payload, options.merge(iss: iss))
-        end.to raise_error(JWT::InvalidIssuerError, /received <none>/)
+        end.to raise_error(JWTB::InvalidIssuerError, /received <none>/)
       end
 
       it 'must allow a matching issuer to pass' do
@@ -132,25 +132,25 @@ module JWT
         Verify.verify_jti(payload, options.merge(verify_jti: true))
       end
 
-      it 'must raise JWT::InvalidJtiError when the jti is missing' do
+      it 'must raise JWTB::InvalidJtiError when the jti is missing' do
         expect do
           Verify.verify_jti(base_payload, options)
-        end.to raise_error JWT::InvalidJtiError, /missing/i
+        end.to raise_error JWTB::InvalidJtiError, /missing/i
       end
 
-      it 'must raise JWT::InvalidJtiError when the jti is an empty string' do
+      it 'must raise JWTB::InvalidJtiError when the jti is an empty string' do
         expect do
           Verify.verify_jti(base_payload.merge('jti' => '   '), options)
-        end.to raise_error JWT::InvalidJtiError, /missing/i
+        end.to raise_error JWTB::InvalidJtiError, /missing/i
       end
 
-      it 'must raise JWT::InvalidJtiError when verify_jti proc returns false' do
+      it 'must raise JWTB::InvalidJtiError when verify_jti proc returns false' do
         expect do
           Verify.verify_jti(payload, options.merge(verify_jti: ->(_jti) { false }))
-        end.to raise_error JWT::InvalidJtiError, /invalid/i
+        end.to raise_error JWTB::InvalidJtiError, /invalid/i
       end
 
-      it 'true proc should not raise JWT::InvalidJtiError' do
+      it 'true proc should not raise JWTB::InvalidJtiError' do
         Verify.verify_jti(payload, options.merge(verify_jti: ->(_jti) { true }))
       end
     end
@@ -158,10 +158,10 @@ module JWT
     context '.verify_not_before(payload, options)' do
       let(:payload) { base_payload.merge('nbf' => (Time.now.to_i + 5)) }
 
-      it 'must raise JWT::ImmatureSignature when the nbf in the payload is in the future' do
+      it 'must raise JWTB::ImmatureSignature when the nbf in the payload is in the future' do
         expect do
           Verify.verify_not_before(payload, options)
-        end.to raise_error JWT::ImmatureSignature
+        end.to raise_error JWTB::ImmatureSignature
       end
 
       it 'must allow some leeway in the token age when global leeway is configured' do
@@ -176,10 +176,10 @@ module JWT
     context '.verify_sub(payload, options)' do
       let(:sub) { 'ruby jwt subject' }
 
-      it 'must raise JWT::InvalidSubError when the subjects do not match' do
+      it 'must raise JWTB::InvalidSubError when the subjects do not match' do
         expect do
           Verify.verify_sub(base_payload.merge('sub' => 'not-a-match'), options.merge(sub: sub))
-        end.to raise_error JWT::InvalidSubError
+        end.to raise_error JWTB::InvalidSubError
       end
 
       it 'must allow a matching sub' do
